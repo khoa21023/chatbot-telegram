@@ -1,53 +1,36 @@
 import telebot
 from flask import Flask
 from threading import Thread
-import time
 import os
 
-# --- CẤU HÌNH ---
-# Hãy thay thế bằng Token bạn lấy từ BotFather
-API_TOKEN = os.getenv('BOT_TOKEN')
-
+API_TOKEN = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(API_TOKEN)
 app = Flask(__name__)
 
-# --- PHẦN 1: SERVER ẢO (KEEP ALIVE) ---
-@app.route('/')
+@app.route("/")
 def home():
-    return "I'm alive! Bot đang hoạt động."
+    return "Bot is running on Render!"
 
-def run_http_server():
-    # Chạy server trên port 8080 (hoặc port do Render cấp)
-    app.run(host='0.0.0.0', port=8080)
+def run_server():
+    app.run(host="0.0.0.0", port=8080)
 
 def keep_alive():
-    # Chạy server Flask trong một luồng riêng biệt (thread)
-    # để không chặn luồng chính của Bot
-    t = Thread(target=run_http_server)
+    t = Thread(target=run_server)
+    t.daemon = True
     t.start()
 
-# --- PHẦN 2: LOGIC CỦA BOT ---
+@bot.message_handler(commands=['start'])
+def start(message):
+    bot.reply_to(message, "Bot hoạt động rồi nhé!")
 
-# Xử lý lệnh /start
-@bot.message_handler(commands=['start', 'help'])
-def send_welcome(message):
-    bot.reply_to(message, "Chào bạn! Tôi là bot chạy 24/24 đây.\nHãy thử chat gì đó xem.")
+@bot.message_handler(func=lambda m: True)
+def echo(message):
+    bot.reply_to(message, f"Bạn nói: {message.text}")
 
-# Xử lý tin nhắn văn bản bất kỳ
-@bot.message_handler(func=lambda message: True)
-def echo_all(message):
-    phan_hoi = f"Bạn vừa nói: {message.text}"
-    bot.reply_to(message, phan_hoi)
-
-# --- PHẦN 3: CHẠY CHƯƠNG TRÌNH ---
-if __name__ == '__main__':
-    # 1. Kích hoạt server ảo trước
+if __name__ == "__main__":
     keep_alive()
-    
-    # 2. Bắt đầu chạy Bot
-    print("Bot đang khởi động...")
+
     try:
-        # infinity_polling giúp bot tự kết nối lại nếu rớt mạng
-        bot.infinity_polling() 
+        bot.infinity_polling(skip_pending=True, timeout=20)
     except Exception as e:
-        print(f"Có lỗi xảy ra: {e}")
+        print("Lỗi:", e)
