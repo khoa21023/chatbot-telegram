@@ -5,7 +5,7 @@ import time
 
 # --- CẤU HÌNH ---
 # Hãy thay thế bằng Token bạn lấy từ BotFather
-API_TOKEN = 'ĐIỀN_TOKEN_CỦA_BẠN_VÀO_ĐÂY'
+API_TOKEN = '8560870294:AAGCeIx2MAylVZtUwH0DwXM3E5Y20RyrCAY'
 
 bot = telebot.TeleBot(API_TOKEN)
 app = Flask(__name__)
