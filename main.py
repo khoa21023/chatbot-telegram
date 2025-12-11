@@ -2,10 +2,11 @@ import telebot
 from flask import Flask
 from threading import Thread
 import time
+import os
 
 # --- CẤU HÌNH ---
 # Hãy thay thế bằng Token bạn lấy từ BotFather
-API_TOKEN = '8560870294:AAGCeIx2MAylVZtUwH0DwXM3E5Y20RyrCAY'
+API_TOKEN = os.getenv('BOT_TOKEN')
 
 bot = telebot.TeleBot(API_TOKEN)
 app = Flask(__name__)
